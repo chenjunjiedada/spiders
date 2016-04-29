@@ -1,0 +1,30 @@
+from scrapy.spiders import CrawlSpider
+from scrapy.selector import Selector
+
+from xiaomi.items import AppItem
+import logging
+
+class XiaomiSpider(CrawlSpider):
+	name = "xiaomi"
+	allowed_domains = ["mi.com"]
+	start_urls = ["http://app.mi.com/topList"]
+	http_proxy = "http://child-prc.intel.com:913"
+	https_proxy = "https://child-prc.intel.com:913"
+
+def parse(self, response):
+	self.logger.info("helloworld")
+	apps = response.selector.xpath('//ul[@class="applist"]/li')
+	count = 0
+	items = []
+	logging.info("hello world")
+    for app in apps:
+        self.logger.info("helloworld")
+        logging.info("hello world")
+        item = AppItem()
+        item['app_name'] = app.xpath('//h5/a/text()')[count].extract()
+        item['down_link'] = app.xpath('//h5/a/@href')[count].extract()
+        item['app_rank'] = count+1
+        items.append(item)
+        count += 1
+    return items
+
